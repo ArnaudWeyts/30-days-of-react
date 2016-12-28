@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Timeline</title>
+  <title>Clock</title>
   <!-- Script tags including React -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.3.1/react.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.3.1/react-dom.min.js"></script>
@@ -38,6 +38,12 @@
         };
 
         this.setTimer();
+      }
+
+      componentWillUnmount() {
+        if (this.timeout) {
+          clearTimeout(this.timeout);
+        }
       }
 
       setTimer() {
