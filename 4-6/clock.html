@@ -78,6 +78,61 @@
       }
     }
 
+    // this just makes sure we don't have any errors cuz we don't actually have these objects
+    const Title = 'TitleObject';
+    const Message = 'MessageObject'
+
+    Clock.propTypes = {
+      // our clock doesn't actually accept any proptypes
+      // but here are some example types
+
+      title: React.PropTypes.string,
+      count: React.PropTypes.number,
+      isOn: React.PropTypes.bool,
+      onDisplay: React.PropTypes.func,
+      symbol: React.PropTypes.symbol,
+      user: React.PropTypes.object,
+
+      name: React.PropTypes.node,
+
+      counts: React.PropTypes.array,
+      users: React.PropTypes.arrayOf(React.PropTypes.object),
+      alarmColor: React.PropTypes.oneOf(['red', 'blue']),
+      description: React.PropTypes.oneOfType([
+        React.PropTypes.string,
+        React.PropTypes.instanceOf(Title)
+      ]),
+
+      numbers: React.PropTypes.objectOf(React.PropTypes.numbers),
+      messages: React.PropTypes.instanceOf(Message),
+
+      contactList: React.PropTypes.shape({
+        name: React.PropTypes.string,
+        phone: React.PropTypes.string
+      }),
+
+      displayEle: React.PropTypes.element,
+
+      title2: React.PropTypes.string.isRequired,
+
+      userWithName: (props, propName, componentName) => {
+        if (!props[propName] || !props[propName].name) {
+          return new Error(
+            `Invalid ${propName}: No name property defined for component ${componentName}`
+          )
+        }
+      },
+
+      usersWithNames: React.PropTypes
+        .arrayOf((props, propName, ComponentName) => {
+          if (!props[propName] || !props[propName].name) {
+            return new Error(
+              `Invalid ${propName}: No name property defined for component ${componentName}`
+            )
+          }
+        })
+    }
+
     const mountComponent = document.querySelector('#app');
     ReactDOM.render(<Clock />, mountComponent);
   </script>

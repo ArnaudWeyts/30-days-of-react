@@ -193,7 +193,15 @@
         },
         comments: [{ from: 'Nate', text: 'I am so jealous' }]
       },
-    ]
+    ];
+
+    Header.propTypes = {
+      title: 'React.PropTypes.string'
+    };
+
+    Header.defaultProps = {
+      title: 'GitHub activity'
+    }
 
     const mountComponent = document.querySelector('#app');
     ReactDOM.render(<App />, mountComponent);
