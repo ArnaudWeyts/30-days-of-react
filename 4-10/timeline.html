@@ -52,13 +52,11 @@
         });
       }
 
+      handleSearch(val) {
+        this.props.onSearch(val);
+      }
+
       render() {
-        let searchInputClasses = ['searchInput'];
-
-        if (this.state.searchVisible) {
-          searchInputClasses.push('active');
-        }
-
         return (
           <div className="header">
             <div className="fa fa more">ℹ️</div>
@@ -66,53 +64,132 @@
               {this.props.title}
             </span>
 
-            <input type="text" className={searchInputClasses.join(' ')} placeholder="Search ..." />
+            <SearchForm
+              searchVisible={this.state.searchVisible}
+              onSubmit={this.handleSearch.bind(this)}
+            />
 
             <div className="fa fa-search searchIcon" onClick={this.showSearch.bind(this)}>🕵️</div>
           </div>
-        )
+        );
       }
     }
+    Header.propTypes = {
+      title: 'React.PropTypes.string',
+      onSearch: React.PropTypes.func
+    };
 
-    class Content extends React.Component {
+    Header.defaultProps = {
+      title: 'GitHub activity'
+    }
+
+    class SearchForm extends React.Component {
+      constructor(props) {
+        super(props);
+
+        this.state = {
+          searchText: ''
+        }
+      }
+
+      updateSearchInput(event) {
+        this.setState({
+          searchText: event.target.value
+        });
+      }
+
+      submitForm(event) {
+        event.preventDefault();
+        this.props.onSubmit(this.state.searchText);
+      }
+
+      render() {
+        let searchInputClasses = ['searchInput'];
+
+        if (this.props.searchVisible) {
+          searchInputClasses.push('active');
+        }
+
+        return (
+          <form onSubmit={this.submitForm.bind(this)}>
+           <input
+            type="text"
+            value={this.state.searchText}
+            className={searchInputClasses.join(' ')}
+            onChange={this.updateSearchInput.bind(this)}
+            placeholder="Search ..." />
+          </form>
+        );
+      }
+    }
+    SearchForm.PropTypes = {
+      searchVisible: React.PropTypes.bool,
+      onSubmit: React.PropTypes.func.isRequired
+    };
+    SearchForm.defaultProps = {
+      searchVisible: false,
+      onSubmit: () => {}
+    };
+
+    const rootUrl = `https://api.github.com`
+    const endpoint = `/users/fullstackreact/events`
+
+    class Panel extends React.Component {
       constructor(props) {
         super(props);
 
         this.state = {
           loading: false,
+          searchFilter: '',
           activities: []
-        };
+        }
       }
 
-      componentDidMount() {
-        this.updateData();
-      }
-
-      componentWillRecieveProps(nextProps) {
+      componentDidMount() {this.updateData();}
+      componentWillReceiveProps(nextProps) {
+        // Check to see if the requestRefresh prop has changed
         if (nextProps.requestRefresh !== this.props.requestRefresh) {
           this.setState({loading: true}, this.updateData);
         }
       }
 
-      updateData() {
+      // after the content has refreshed, we want to
+      // reset the loading variable
+      onComponentRefresh() {this.setState({loading: false});}
+
+      handleSearch(val) {
         this.setState({
-          loading: false,
-          {/* Remember to load the JSON from a file */}
-          activities: data
-        }, this.props.onComponentRefresh);
+          searchFilter: val,
+          loading: true
+        });
+      }
+
+      // Call out to github and refresh directory
+      updateData() {
+        const {activities, searchFilter} = this.state;
+
+        const filter = searchFilter !== '' &&
+          (e => e.actor.login.match(new RegExp(searchFilter)));
+
+        json = activities.filter(filter);
+        if (activities.length == 0) {
+          this.setState({activities: json})
+        }
+
+        return json;
       }
 
       render() {
-        const {loading, activities} = this.state;
-
+        const {loading} = this.state;
         return (
-          <div className="content">
-            <div className="line"></div>
-            {loading && <div>Loading</div>}
-
-            {activities.map((activity) => (
-              <ActivityItem activity={activity} />
-            ))}
+          <div>
+            <Header
+              title="Github activity"
+              onSearch={this.handleSearch.bind(this)}/>
+            <Content
+              requestRefresh={loading}
+              onComponentRefresh={this.onComponentRefresh.bind(this)}
+              fetchData={this.updateData.bind(this)} />
           </div>
         )
       }
@@ -133,7 +210,7 @@
             <p>{activity.text}</p>
             <div className="commentCount">{activity.comments.length}</div>
           </div>
-        )
+        );
       }
     }
 
@@ -170,11 +247,11 @@
               </Footer>
             </div>
           </div>
-        )
+        );
       }
     }
 
-    const activities = [
+    const data = [
       {
         timestamp: new Date().getTime(),
         text: "Ate lunch",
@@ -194,14 +271,6 @@
         comments: [{ from: 'Nate', text: 'I am so jealous' }]
       },
     ];
-
-    Header.propTypes = {
-      title: 'React.PropTypes.string'
-    };
-
-    Header.defaultProps = {
-      title: 'GitHub activity'
-    }
 
     const mountComponent = document.querySelector('#app');
     ReactDOM.render(<App />, mountComponent);
