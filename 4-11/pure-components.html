@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Pure Components</title>
+  <!-- Script tags including React -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.3.1/react.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.3.1/react-dom.min.js"></script>
+  <script src="https://npmcdn.com/babel-core@5.8.38/browser.min.js"></script>
+</head>
+<body>
+  <style>
+      .clock {
+        font-family: 'Helvetica Neue';
+        text-align: center;
+        margin: 0 auto;
+        width: 200px;
+        font-size: 30px;
+        border: 1px solid #095489;
+        border-radius: 3px;
+        background-color: #095489;
+        color: #FFF;
+        padding: 10px;
+      }
+  </style>
+  <div id="app"></div>
+  <script type="text/babel">
+    /*
+      const HelloWorld = () => (<div>Hello world</div>);
+
+      const Notification = (props) => {
+        const {level, message} = props;
+        return (
+          <div className=`alert alert-${level}`>
+            {message}
+          </div>
+        )
+      };
+    */
+
+    const Hour = (props) => {
+      let {hours} = props;
+      if (hours == 0) { hours = 12; }
+      if (props.twelveHours) { hours = hours - 12; }
+      return (<span>{hours}</span>);
+    }
+    const Minute  = ({minutes}) => (<span>{minutes<10 && '0'}{minutes}</span>)
+    const Second  = ({seconds}) => (<span>{seconds<10 && '0'}{seconds}</span>)
+    const Separator = ({separator}) => (<span>{separator || ':'}</span>)
+    const Ampm = ({hours}) => (<span>{hours >= 12 ? 'pm' : 'am'}</span>)
+
+    const Formatter = (props) => {
+      let children = props.format.split('').map((e, idx) => {
+        if (e == 'h') {
+          return <Hour key={idx} {...props} />
+        } else if (e == 'm') {
+          return <Minute key={idx} {...props} />
+        } else if (e == 's') {
+          return <Second key={idx} {...props} />
+        } else if (e == 'p') {
+          return <Ampm key={idx} {...props} />
+        } else if (e == ' ') {
+          return <span key={idx}> </span>;
+        } else {
+          return <Separator key={idx} {...props} />
+        }
+      });
+
+      return <span>{children}</span>;
+    }
+
+    class Clock extends React.Component {
+      render() {
+        return (
+          <div className="clock">
+            <Formatter {...this.props} state={this.state} />
+          </div>
+        );
+      }
+    }
+
+    // wtf
+
+    const mountComponent = document.querySelector('#app');
+    ReactDOM.render(<Clock />, mountComponent);
+  </script>
+</body>
+</html>
