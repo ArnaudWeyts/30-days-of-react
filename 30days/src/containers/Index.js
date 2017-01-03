@@ -1,11 +1,15 @@
 import React from 'react';
 import Navbar from '../components/Nav/Navbar';
+import { connect } from 'react-redux';
 
 export class Index extends React.Component {
   render() {
+    // this isn't right REEEEEEEEEEEEE
+    // We should have a regular currentUser object in our props but we don't and idk WHYYYYY
+    const {currentUser} = this.props.actions;
     return (
       <div className="app">
-        <Navbar />
+        <Navbar currentUser={currentUser} />
         <div className="page">
           {this.props.children}
         </div>
@@ -14,4 +18,6 @@ export class Index extends React.Component {
   }
 }
 
-export default Index;
+export default connect(state => ({
+  currentUser: state.currentUser
+}))(Index);

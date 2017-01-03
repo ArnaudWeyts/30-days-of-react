@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router';
 
-export const Navbar = () => (
+export const Navbar = ({currentUser}) => (
   <div className="navbar">
     <Link
       className="link"
@@ -15,6 +15,16 @@ export const Navbar = () => (
       activeClassName="active">
         About
     </Link>
+    {currentUser.loggedIn ?
+      <Link
+        className="link"
+        to="/logout"
+        activeClassName="active">Logout</Link> :
+      <Link
+        className="link"
+        to="/login"
+        activeClassName="active">Login</Link>
+    }
   </div>
 );
 

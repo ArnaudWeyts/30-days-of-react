@@ -5,7 +5,10 @@ export const Home = (props) => {
   return (
     <div className="content">
       <h1>Welcome home!</h1>
-      <p>The time is {props.currentTime.toString()}</p>
+      <p>The time is {props.currentTime.currentTime.toString()}</p>
+      <button onClick={props.actions.currentTime.updateTime}>
+        Update
+      </button>
     </div>
   );
 };
